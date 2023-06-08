@@ -13,9 +13,7 @@
 % 
 %
 % Huy Nguyen, Blake Carter
-% 5 June 2023
-%
-% Updated: 6 June 2023
+% Created: 5 June 2023
 
 
 clearvars
@@ -37,9 +35,9 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 75;
-Ny = 80;
-Nz = 85;
+Nx = 35;
+Ny = 25;
+Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
@@ -50,16 +48,16 @@ L = 4 * H; % Length, [m]
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
-dt = 0.1 * 10^-9;
-max_iter = 500;    % number of iterations
+dt = 5 * 10^-9;
+max_iter = 10000;    % number of iterations
 
 
 % Convergence variable
 converge_name = 'u';
 
 % Update every _ iterations
-update_rate = 50; % variable field plots
-update_conv = 10; % convergence plot
+update_rate = 500; % variable field plots
+update_conv = 100; % convergence plot
 % The convergence plot will be updated to a smooth plot at the end
 
 
@@ -143,7 +141,11 @@ converge(1) = eval( converge_str );
 % MacCormack Method for compressible Navier-Stokes
 
 % Compute numerical schlieren image
-S = schlieren(rho, dx,dy,dz);
+if (useSchlieren)
+    S = schlieren(rho, dx,dy,dz);
+else
+    S = [];
+end
 
 % Plot Initial Condition
 fig = figure;
@@ -265,7 +267,11 @@ while iteration < max_iter
 
 
     % Compute numerical schlieren image
-    S = schlieren(rho, dx,dy,dz);
+    if (useSchlieren)
+        S = schlieren(rho, dx,dy,dz);
+    else
+        S = [];
+    end
 
     % Update primitive variable fields
     if mod(iteration, update_rate) == 0
@@ -307,51 +313,51 @@ time_all = toc(time_all)
 function [] = plot_fields( rho,u,v, T,p,e, xx,yy, useSchlieren,S )
 % Pseudocolor plot of primitive variables in x,y domain
 
-% Obtain midplane slices
-sz = size(rho)
-midplane = floor(sz(3)/2)
-xx = squeeze(xx(:,:,midplane));
-yy = squeeze(yy(:,:,midplane));
+% Obtain zplane slices
+sz = size(rho);
+zplane = floor(sz(3)/4);
+xx = squeeze(xx(:,:,zplane));
+yy = squeeze(yy(:,:,zplane));
 
 subplot(3,3,1);
 if ~(useSchlieren)
-    pcolor(xx,yy,rho(:,:,midplane));
+    pcolor(xx,yy,rho(:,:,zplane));
     title('Density');
     cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
     plot_settings(cb_str, jet,'auto')
 else
-    pcolor(xx,yy,S(:,:,midplane));
+    pcolor(xx,yy,S(:,:,zplane));
     title('Numerical schlieren image');
     cb_str = '$S(x,y)$ $[1]$';
     plot_settings(cb_str, gray,[0 1])
 end
 
 subplot(3,3,2);
-pcolor(xx,yy,u(:,:,midplane));
+pcolor(xx,yy,u(:,:,zplane));
 title('Velocity x-component');
 cb_str = '$u$ $[\frac{m}{s}]$';
 plot_settings(cb_str, jet,'auto')
 
 subplot(3,3,3);
-pcolor(xx,yy,v(:,:,midplane));
+pcolor(xx,yy,v(:,:,zplane));
 title('Velocity y-component');
 cb_str = '$v$ $[\frac{m}{s}]$';
 plot_settings(cb_str, jet,'auto')
 
 subplot(3,3,4);
-pcolor(xx,yy,e(:,:,midplane));
+pcolor(xx,yy,e(:,:,zplane));
 title('Internal energy');
 cb_str = '$e$ $[J]$';
 plot_settings(cb_str, jet,'auto')
 
 subplot(3,3,5);
-pcolor(xx,yy,p(:,:,midplane));
+pcolor(xx,yy,p(:,:,zplane));
 title('Pressure');
 cb_str = '$p$ $[\frac{N}{m^2}]$';
 plot_settings(cb_str, jet,'auto')
 
 subplot(3,3,6);
-pcolor(xx,yy,T(:,:,midplane));
+pcolor(xx,yy,T(:,:,zplane));
 title('Temperature');
 cb_str = '$T$ $[K]$';
 plot_settings(cb_str, hot,'auto')
