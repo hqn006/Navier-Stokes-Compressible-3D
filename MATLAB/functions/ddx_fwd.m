@@ -10,7 +10,7 @@ for k=1:size(f,3)
         %Periodic BC
         %df(end,j)=(f(1,j)-f(end,j))/dx;
         %Normal
-       % df(size(f,1))=(f(size(f,1),j,k)-f(size(f,1)-1,j,k))/dx; %BOundary condition backwards  
+        df(size(f,1))=(f(size(f,1),j,k)-f(size(f,1)-1,j,k))/dx; %BOundary condition backwards  
     end
 end
 
