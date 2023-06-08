@@ -23,8 +23,8 @@
 function df = ddy_fwd(f,dy)
 
 df = zeros([size(f)]);
-for i=1:size(f,1)
-    for k=1:size(f,3)
+for i=2:size(f,1)-1
+    for k=2:size(f,3)-1
         for j=1:size(f,2)-1
             df(i,j,k)=(f(i,j+1,k)-f(i,j,k))/dy;
         end

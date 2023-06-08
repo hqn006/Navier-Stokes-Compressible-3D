@@ -2,8 +2,8 @@
 function df = ddx_fwd(f,dx)
 
 df=zeros([size(f)]);
-for k=1:size(f,3)
-    for j=1:size(f,2)
+for k=2:size(f,3)-1
+    for j=2:size(f,2)-1
         for i=1:size(f,1)-1
             df(i,j,k)=(f(i+1,j,k)-f(i,j,k))/dx; %forward
         end

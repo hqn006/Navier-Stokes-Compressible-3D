@@ -60,7 +60,7 @@ converge_name = 'rho';
 
 % Update every _ iterations
 update_rate = ceil(max_iter/10); % variable field plots
-% update_rate = 1;
+update_rate = 10;
 update_conv = update_rate/5;     % convergence plot
 update_conv = 1;
 print_rate = 1;

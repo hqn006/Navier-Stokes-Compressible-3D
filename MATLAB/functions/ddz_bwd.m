@@ -2,8 +2,8 @@ function df=ddz_bwd(f,dz)
 
 df=zeros([size(f)]);
 
-for i=1:size(f,1)
-    for j=1:size(f,2)
+for i=2:size(f,1)-1
+    for j=2:size(f,2)-1
         %df(i,1)=(f(i,2)-f(i,1))/dy; %BC backward
         %periodic
        % df(i,1)=(f(i,1)-f(i,end))/dy;
