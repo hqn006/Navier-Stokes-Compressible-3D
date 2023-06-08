@@ -5,13 +5,6 @@
 % - Assume calorically perfect gas
 %
 %
-% Validation case:
-% Yang, R., Wang, Z., Zhao, Y., Wang, Q., amp; Feng, W. (2020). Numerical 
-% investigation on spatial development of the secondary flow in a supersonic 
-% turbulent square duct. Aerospace Science and Technology, 100, 105832. 
-% https://doi.org/10.1016/j.ast.2020.105832
-% 
-%
 % Huy Nguyen, Blake Carter
 % Created: 5 June 2023
 
