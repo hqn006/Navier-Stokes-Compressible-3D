@@ -35,21 +35,21 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 40;
-Ny = 30;
+Nx = 30;
+Ny = 20;
 Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 25.4 * 10^-3; % Height, [m]
 W = 25.4 * 10^-3; % Width,  [m]
-L = 10 * H; % Length, [m]
+L = 6 * H; % Length, [m]
 
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
-dt = 1 * 10^-8;
-final_time = 1 * 10^-4;
+dt = 1 * 10^-7;
+final_time = 1 * 10^-3;
 
 % Number of iterations
 max_iter = floor(final_time / dt)
@@ -71,7 +71,7 @@ video_rate = update_rate;
 %% Enable/Disable
 
 % Numerical schlieren ('streaks')
-useSchlieren = false; % Replace density with numerical schlieren
+useSchlieren = true; % Replace density with numerical schlieren
 
 % Adiabatic wall
 Adiabatic = true; % Zero heat flux through wall BC
@@ -211,6 +211,7 @@ while iteration < max_iter
     dGdz(3,:,:,:) = ddz_fwd(squeeze(G(3,:,:,:)),dz);
     dGdz(4,:,:,:) = ddz_fwd(squeeze(G(4,:,:,:)),dz);
     dGdz(5,:,:,:) = ddz_fwd(squeeze(G(5,:,:,:)),dz);
+
     % Compute Ubar, convert to primitives
     Ubar = U - dt*(dEdx + dFdy + dGdz);
     [ rho,u,v,w, T,p,e,Et ] = cons2prim( Ubar, const.R,const.cv );
@@ -252,11 +253,11 @@ while iteration < max_iter
     dFbardy(4,:,:,:) = ddy_bwd(squeeze(Fbar(4,:,:,:)),dy);
     dFbardy(5,:,:,:) = ddy_bwd(squeeze(Fbar(5,:,:,:)),dy);
 
-    dGbardz(1,:,:,:) = ddz_fwd(squeeze(Gbar(1,:,:,:)),dz);
-    dGbardz(2,:,:,:) = ddz_fwd(squeeze(Gbar(2,:,:,:)),dz);
-    dGbardz(3,:,:,:) = ddz_fwd(squeeze(Gbar(3,:,:,:)),dz);
-    dGbardz(4,:,:,:) = ddz_fwd(squeeze(Gbar(4,:,:,:)),dz);
-    dGbardz(5,:,:,:) = ddz_fwd(squeeze(Gbar(5,:,:,:)),dz);
+    dGbardz(1,:,:,:) = ddz_bwd(squeeze(Gbar(1,:,:,:)),dz);
+    dGbardz(2,:,:,:) = ddz_bwd(squeeze(Gbar(2,:,:,:)),dz);
+    dGbardz(3,:,:,:) = ddz_bwd(squeeze(Gbar(3,:,:,:)),dz);
+    dGbardz(4,:,:,:) = ddz_bwd(squeeze(Gbar(4,:,:,:)),dz);
+    dGbardz(5,:,:,:) = ddz_bwd(squeeze(Gbar(5,:,:,:)),dz);
 
     % Compute U at time (n+1)
     U = 0.5*( (U + Ubar) - dt*(dEbardx + dFbardy + dGbardz) );
@@ -348,56 +349,56 @@ zplane = floor(sz(3)/2);
 xx = squeeze(xx(:,:,zplane));
 yy = squeeze(yy(:,:,zplane));
 
-% subplot(3,3,1);
-% if ~(useSchlieren)
-%     pcolor(xx,yy,rho(:,:,zplane));
-%     title('Density');
-%     cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
-%     plot_settings(cb_str, jet,'auto')
-% else
-%     pcolor(xx,yy,S(:,:,zplane));
-%     title('Numerical schlieren image');
-%     cb_str = '$S(x,y)$ $[1]$';
-%     plot_settings(cb_str, gray,[0 1])
-% end
-% 
-% subplot(3,3,2);
-% pcolor(xx,yy,u(:,:,zplane));
-% title('Velocity x-component');
-% cb_str = '$u$ $[\frac{m}{s}]$';
-% plot_settings(cb_str, jet,'auto')
-% 
-% subplot(3,3,3);
-% pcolor(xx,yy,v(:,:,zplane));
-% title('Velocity y-component');
-% cb_str = '$v$ $[\frac{m}{s}]$';
-% plot_settings(cb_str, jet,'auto')
-% 
-% subplot(3,3,4);
-% pcolor(xx,yy,e(:,:,zplane));
-% title('Internal energy');
-% cb_str = '$e$ $[J]$';
-% plot_settings(cb_str, jet,'auto')
-% 
-% subplot(3,3,5);
-% pcolor(xx,yy,p(:,:,zplane));
-% title('Pressure');
-% cb_str = '$p$ $[\frac{N}{m^2}]$';
-% plot_settings(cb_str, jet,'auto')
-% 
-% subplot(3,3,6);
-% pcolor(xx,yy,T(:,:,zplane));
-% title('Temperature');
-% cb_str = '$T$ $[K]$';
-% plot_settings(cb_str, hot,'auto')
+subplot(3,3,1);
+if ~(useSchlieren)
+    pcolor(xx,yy,rho(:,:,zplane));
+    title('Density');
+    cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
+    plot_settings(cb_str, jet,'auto')
+else
+    pcolor(xx,yy,S(:,:,zplane));
+    title('Numerical schlieren image');
+    cb_str = '$S(x,y)$ $[1]$';
+    plot_settings(cb_str, gray,[0 1])
+end
 
+subplot(3,3,2);
+pcolor(xx,yy,u(:,:,zplane));
+title('Velocity x-component');
+cb_str = '$u$ $[\frac{m}{s}]$';
+plot_settings(cb_str, jet,'auto')
 
-% Full size pressure plot
-subplot(3,3,1:6);
+subplot(3,3,3);
+pcolor(xx,yy,v(:,:,zplane));
+title('Velocity y-component');
+cb_str = '$v$ $[\frac{m}{s}]$';
+plot_settings(cb_str, jet,'auto')
+
+subplot(3,3,4);
+pcolor(xx,yy,e(:,:,zplane));
+title('Internal energy');
+cb_str = '$e$ $[J]$';
+plot_settings(cb_str, jet,'auto')
+
+subplot(3,3,5);
 pcolor(xx,yy,p(:,:,zplane));
 title('Pressure');
 cb_str = '$p$ $[\frac{N}{m^2}]$';
 plot_settings(cb_str, jet,'auto')
+
+subplot(3,3,6);
+pcolor(xx,yy,T(:,:,zplane));
+title('Temperature');
+cb_str = '$T$ $[K]$';
+plot_settings(cb_str, hot,'auto')
+
+
+% % Full size pressure plot
+% subplot(3,3,1:6);
+% pcolor(xx,yy,p(:,:,zplane));
+% title('Pressure');
+% cb_str = '$p$ $[\frac{N}{m^2}]$';
+% plot_settings(cb_str, jet,'auto')
 
 
 drawnow
