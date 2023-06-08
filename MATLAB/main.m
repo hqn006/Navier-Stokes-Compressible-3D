@@ -48,24 +48,21 @@ L = 5 * H; % Length, [m]
 
 
 % Time span
-% dt = 2.35 * 10^-11; % Time step, [s]
 dt = 1 * 10^-7;
 final_time = 2 * 10^-4;
 
 % Number of iterations
-max_iter = floor(final_time / dt)
+max_iter = floor(final_time / dt) + 1
 
 
 % Convergence variable
 converge_name = 'u';
 
 % Update every _ iterations
-% update_rate = ceil(max_iter/10); % variable field plots
-update_rate = 10;
+update_rate = 10; % variable field plots
 update_conv = 1; % convergence plot
 print_rate = 1;
 video_rate = update_rate;
-% The convergence plot will be updated to a smooth plot at the end
 
 
 % Figure settings
