@@ -25,6 +25,7 @@ addpath('functions')
 
 format long
 set(0, 'DefaultTextInterpreter','Latex')
+set(0, 'DefaultAxesFontSize', 14);
 
 
 
@@ -35,9 +36,9 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 40;
-Ny = 30;
-Nz = 30;
+Nx = 60;
+Ny = 50;
+Nz = 50;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
@@ -436,7 +437,7 @@ ax = gca;
 xlabel('x [in.]'); ylabel('y [in.]');
 cb = colorbar;
 cb.Label.Interpreter = 'Latex';
-ylabel(cb, cb_str, 'FontSize',14);
+ylabel(cb, cb_str, 'FontSize',16);
 colormap(cb,cmap);
 
 colormap(ax,cmap);
