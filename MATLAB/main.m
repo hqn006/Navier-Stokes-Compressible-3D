@@ -365,6 +365,8 @@ function [] = plot_fields( rho,u,v, T,p,e, xx,yy)
 % Obtain zplane slices
 sz = size(rho);
 zplane = floor(sz(3)/2);
+xx = squeeze(xx(:,:,zplane));
+yy = squeeze(yy(:,:,zplane));
 
 
 % Density
@@ -418,6 +420,8 @@ function [] = plot_schlieren( S, xx,yy )
 % Obtain zplane slices
 sz = size(S);
 zplane = floor(sz(3)/2);
+xx = squeeze(xx(:,:,zplane));
+yy = squeeze(yy(:,:,zplane));
 
 
 % Plot schlieren
