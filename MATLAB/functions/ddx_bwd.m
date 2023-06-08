@@ -16,12 +16,12 @@ function dfdx = ddx_bwd(f,dx)
     end
 
     % forward difference for first point
-    for k=1:nz
-        i = 1;
-        for j=1:ny
-            dfdx(i,j,k) = (f(i+1,j,k)-f(i,j,k))/dx;
-        end
-    end
+    %for k=1:nz
+    %    i = 1;
+    %    for j=1:ny
+    %        dfdx(i,j,k) = (f(i+1,j,k)-f(i,j,k))/dx;
+    %    end
+    %end
     
     %     % assuming periodicity  (left boudary)
     %     i = 1;
