@@ -44,7 +44,7 @@ Nz = 20;
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 1 * units.in2mm*10^-3; % Height, [m]
 W = 1 * units.in2mm*10^-3; % Width,  [m]
-L = 10 * H; % Length, [m]
+L = 5 * H; % Length, [m]
 
 
 % Time span
@@ -346,13 +346,18 @@ plot_convergence(t,converge, title_str,converge_str);
 
 
 % Display average time and total time elapsed
-time_avg_calc = seconds( mean(timekeep_calc) )
-time_avg_plot = seconds( mean(timekeep_plot) )
+time_avg_calc = seconds( mean(timekeep_calc) );
+time_avg_plot = seconds( mean(timekeep_plot) );
 time_all = seconds( toc(time_all) );
-time_all.format = 'mm:ss.SSS'
+time_all.Format = 'mm:ss';
+
+fprintf("Average calculation time: " + char(time_avg_calc) + "\n")
+fprintf("Average plotting time:    " + char(time_avg_plot) + "\n")
+fprintf("\nTotal time: " + char(time_all) + " min\n\n")
 
 
 close(video1);
+close(video2);
 
 
 
