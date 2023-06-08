@@ -35,15 +35,15 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 130;
-Ny = 120;
-Nz = 120;
+Nx = 30;
+Ny = 20;
+Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 25.4 * 10^-3; % Height, [m]
-W = 25.4 * 10^-3; % Width,  [m]
-L = 4 * H; % Length, [m]
+W = 2*25.4 * 10^-3; % Width,  [m]
+L = 5 * H; % Length, [m]
 
 
 % Time span
@@ -56,11 +56,11 @@ max_iter = floor(final_time / dt)
 
 
 % Convergence variable
-converge_name = 'u';
+converge_name = 'rho';
 
 % Update every _ iterations
-update_rate = ceil(max_iter/100); % variable field plots
-update_rate = 1;
+update_rate = ceil(max_iter/10); % variable field plots
+% update_rate = 1;
 update_conv = update_rate/5;     % convergence plot
 update_conv = 1;
 print_rate = 1;
@@ -171,6 +171,11 @@ time_all = tic;
 iteration = 0; % number of completed iterations
 while iteration < max_iter
     time = tic;
+
+
+    if ~( isreal(rho) )
+        error('Imaginary density found.')
+    end
 
     
     %% PREDICTOR STEP
@@ -339,7 +344,7 @@ function [] = plot_fields( rho,u,v, T,p,e, xx,yy, useSchlieren,S )
 
 % Obtain zplane slices
 sz = size(rho);
-zplane = floor(sz(3)/4);
+zplane = floor(sz(3)/2);
 xx = squeeze(xx(:,:,zplane));
 yy = squeeze(yy(:,:,zplane));
 

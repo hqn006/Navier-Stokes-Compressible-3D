@@ -10,6 +10,12 @@ function [ rho,u,v,w, T,p,e,Et ] = BC( rho,u,v,w, T,p,e,Et, u_Inf, ...
 
 
 %% Update BCs that are explicitly defined
+
+% @INLET:
+u(1,:,:) = u_Inf; v(1,:,:) = 0; w(1,:,:) = 0;
+p(1,:,:) = const.p0; T(1,:,:) = const.T0;
+
+
 % @WALLS (both boundaries in y & z):
 if (Adiabatic)
     % Zero heat flux at walls
@@ -37,10 +43,6 @@ p(:,:,1) = 2*p(:,:,2) - p(:,:,3);
 p(:,:,end) = 2*p(:,:,end-1) - p(:,:,end-2);
 
 
-% @INLET:
-u(1,:,:) = u_Inf; v(1,:,:) = 0; w(1,:,:) = 0;
-p(1,:,:) = const.p0; T(1,:,:) = const.T0;
-
 % @OUTLET:
 % Extrapolation from 2 neighbor points
 u(end,:,:) = 2*u(end-1,:,:) - u(end-2,:,:);
@@ -51,6 +53,7 @@ T(end,:,:) = 2*T(end-1,:,:) - T(end-2,:,:);
 
 
 %% Update boundaries for dependent variables
+
 % @WALLS
 rho(:,1,:) = p(:,1,:)./T(:,1,:) /const.R;       % bottom
 rho(:,end,:) = p(:,end,:)./T(:,end,:) /const.R; % top
