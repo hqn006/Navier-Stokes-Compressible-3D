@@ -36,21 +36,21 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 60;
-Ny = 50;
-Nz = 50;
+Nx = 40;
+Ny = 20;
+Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 1 * units.in2mm*10^-3; % Height, [m]
 W = 1 * units.in2mm*10^-3; % Width,  [m]
-L = 5 * H; % Length, [m]
+L = 10 * H; % Length, [m]
 
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
 dt = 1 * 10^-7;
-final_time = 5 * 10^-4;
+final_time = 2 * 10^-4;
 
 % Number of iterations
 max_iter = floor(final_time / dt)
@@ -92,7 +92,12 @@ dz = H / (Ny-1);
 x = 0 : dx : L;
 y = 0 : dy : H;
 z = 0 : dz : W;
+
+% Plotting grid
 [xx,yy,zz] = ndgrid(x,y,z);
+xx = xx ./ units.in2mm.*10^3;
+yy = yy ./ units.in2mm.*10^3;
+zz = zz ./ units.in2mm.*10^3;
 
 
 % Properties @Infinity
@@ -360,8 +365,6 @@ function [] = plot_fields( rho,u,v, T,p,e, xx,yy)
 % Obtain zplane slices
 sz = size(rho);
 zplane = floor(sz(3)/2);
-xx = squeeze(xx(:,:,zplane)) ./ units.in2mm;
-yy = squeeze(yy(:,:,zplane)) ./ units.in2mm;
 
 
 % Density
@@ -415,8 +418,6 @@ function [] = plot_schlieren( S, xx,yy )
 % Obtain zplane slices
 sz = size(S);
 zplane = floor(sz(3)/2);
-xx = squeeze(xx(:,:,zplane)) ./ units.in2mm;
-yy = squeeze(yy(:,:,zplane)) ./ units.in2mm;
 
 
 % Plot schlieren
