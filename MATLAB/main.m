@@ -35,20 +35,20 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 30;
-Ny = 20;
+Nx = 40;
+Ny = 30;
 Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 25.4 * 10^-3; % Height, [m]
-W = 2*25.4 * 10^-3; % Width,  [m]
-L = 5 * H; % Length, [m]
+W = 25.4 * 10^-3; % Width,  [m]
+L = 10 * H; % Length, [m]
 
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
-dt = 1 * 10^-7;
+dt = 1 * 10^-8;
 final_time = 1 * 10^-4;
 
 % Number of iterations
@@ -56,12 +56,12 @@ max_iter = floor(final_time / dt)
 
 
 % Convergence variable
-converge_name = 'rho';
+converge_name = 'u';
 
 % Update every _ iterations
-update_rate = ceil(max_iter/10); % variable field plots
-update_rate = 10;
-update_conv = update_rate/5;     % convergence plot
+% update_rate = ceil(max_iter/10); % variable field plots
+update_rate = 100;
+% update_conv = update_rate/5;     % convergence plot
 update_conv = 1;
 print_rate = 1;
 video_rate = update_rate;
@@ -348,48 +348,56 @@ zplane = floor(sz(3)/2);
 xx = squeeze(xx(:,:,zplane));
 yy = squeeze(yy(:,:,zplane));
 
-subplot(3,3,1);
-if ~(useSchlieren)
-    pcolor(xx,yy,rho(:,:,zplane));
-    title('Density');
-    cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
-    plot_settings(cb_str, jet,'auto')
-else
-    pcolor(xx,yy,S(:,:,zplane));
-    title('Numerical schlieren image');
-    cb_str = '$S(x,y)$ $[1]$';
-    plot_settings(cb_str, gray,[0 1])
-end
+% subplot(3,3,1);
+% if ~(useSchlieren)
+%     pcolor(xx,yy,rho(:,:,zplane));
+%     title('Density');
+%     cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
+%     plot_settings(cb_str, jet,'auto')
+% else
+%     pcolor(xx,yy,S(:,:,zplane));
+%     title('Numerical schlieren image');
+%     cb_str = '$S(x,y)$ $[1]$';
+%     plot_settings(cb_str, gray,[0 1])
+% end
+% 
+% subplot(3,3,2);
+% pcolor(xx,yy,u(:,:,zplane));
+% title('Velocity x-component');
+% cb_str = '$u$ $[\frac{m}{s}]$';
+% plot_settings(cb_str, jet,'auto')
+% 
+% subplot(3,3,3);
+% pcolor(xx,yy,v(:,:,zplane));
+% title('Velocity y-component');
+% cb_str = '$v$ $[\frac{m}{s}]$';
+% plot_settings(cb_str, jet,'auto')
+% 
+% subplot(3,3,4);
+% pcolor(xx,yy,e(:,:,zplane));
+% title('Internal energy');
+% cb_str = '$e$ $[J]$';
+% plot_settings(cb_str, jet,'auto')
+% 
+% subplot(3,3,5);
+% pcolor(xx,yy,p(:,:,zplane));
+% title('Pressure');
+% cb_str = '$p$ $[\frac{N}{m^2}]$';
+% plot_settings(cb_str, jet,'auto')
+% 
+% subplot(3,3,6);
+% pcolor(xx,yy,T(:,:,zplane));
+% title('Temperature');
+% cb_str = '$T$ $[K]$';
+% plot_settings(cb_str, hot,'auto')
 
-subplot(3,3,2);
-pcolor(xx,yy,u(:,:,zplane));
-title('Velocity x-component');
-cb_str = '$u$ $[\frac{m}{s}]$';
-plot_settings(cb_str, jet,'auto')
 
-subplot(3,3,3);
-pcolor(xx,yy,v(:,:,zplane));
-title('Velocity y-component');
-cb_str = '$v$ $[\frac{m}{s}]$';
-plot_settings(cb_str, jet,'auto')
-
-subplot(3,3,4);
-pcolor(xx,yy,e(:,:,zplane));
-title('Internal energy');
-cb_str = '$e$ $[J]$';
-plot_settings(cb_str, jet,'auto')
-
-subplot(3,3,5);
+% Full size pressure plot
+subplot(3,3,1:6);
 pcolor(xx,yy,p(:,:,zplane));
 title('Pressure');
 cb_str = '$p$ $[\frac{N}{m^2}]$';
 plot_settings(cb_str, jet,'auto')
-
-subplot(3,3,6);
-pcolor(xx,yy,T(:,:,zplane));
-title('Temperature');
-cb_str = '$T$ $[K]$';
-plot_settings(cb_str, hot,'auto')
 
 
 drawnow
