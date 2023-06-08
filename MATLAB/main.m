@@ -35,21 +35,21 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 30;
-Ny = 20;
-Nz = 20;
+Nx = 40;
+Ny = 30;
+Nz = 30;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
-H = 25.4 * 10^-3; % Height, [m]
-W = 25.4 * 10^-3; % Width,  [m]
-L = 6 * H; % Length, [m]
+H = 1 * units.in2mm*10^-3; % Height, [m]
+W = 1 * units.in2mm*10^-3; % Width,  [m]
+L = 5 * H; % Length, [m]
 
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
 dt = 1 * 10^-7;
-final_time = 1 * 10^-3;
+final_time = 5 * 10^-4;
 
 % Number of iterations
 max_iter = floor(final_time / dt)
@@ -60,18 +60,21 @@ converge_name = 'u';
 
 % Update every _ iterations
 % update_rate = ceil(max_iter/10); % variable field plots
-update_rate = 100;
-% update_conv = update_rate/5;     % convergence plot
-update_conv = 1;
+update_rate = 10;
+update_conv = 1; % convergence plot
 print_rate = 1;
 video_rate = update_rate;
 % The convergence plot will be updated to a smooth plot at the end
 
 
+% Figure settings
+fig_size = [1920 1080];
+
+
 %% Enable/Disable
 
 % Numerical schlieren ('streaks')
-useSchlieren = true; % Replace density with numerical schlieren
+useSchlieren = true; % Additional plot & video of numerical schlieren
 
 % Adiabatic wall
 Adiabatic = true; % Zero heat flux through wall BC
@@ -107,21 +110,15 @@ w = zeros(Nx,Ny,Nz);
 
 % Preallocate vector form of Navier-Stokes
 U = prim2cons( rho, u,v,w, T, const.cv );
-E    = zeros(size(U));
-F    = zeros(size(U));
-G    = zeros(size(U));
 Ubar = zeros(size(U));
-Ebar = zeros(size(U));
-Fbar = zeros(size(U));
-Gbar = zeros(size(U));
+E = zeros(size(U));
+F = zeros(size(U));
+G = zeros(size(U));
 
 % Preallocate derivatives of flux vectors
 dEdx = zeros(size(U));
 dFdy = zeros(size(U));
 dGdz = zeros(size(U));
-dEbardx = zeros(size(U));
-dFbardy = zeros(size(U));
-dGbardz = zeros(size(U));
 
 
 % Set up vector to check convergence over time
@@ -143,8 +140,10 @@ converge(1) = eval( converge_str );
 
 
 % Write video
-video = VideoWriter('nse-3d.mp4', 'MPEG-4');
-open(video);
+video1 = VideoWriter('Navier-Stokes_3D_QoI.mp4', 'MPEG-4');
+video2 = VideoWriter('Navier-Stokes_3D_schlieren.mp4', 'MPEG-4');
+open(video1);
+open(video2);
 
 
 
@@ -152,16 +151,18 @@ open(video);
 %% Solve
 % MacCormack Method for compressible Navier-Stokes
 
-% Compute numerical schlieren image
+% Plot Initial Condition
+fig(1) = figure('Position', [0 0 fig_size]);
+plot_fields(rho,u,v, T,p,e, xx,yy)
+
+
+% Compute and plot numerical schlieren
 if (useSchlieren)
     S = schlieren(rho, dx,dy,dz);
-else
-    S = [];
-end
 
-% Plot Initial Condition
-fig = figure;
-plot_fields(rho,u,v, T,p,e, xx,yy, useSchlieren,S)
+    fig(2) = figure('Position', [0 100 fig_size]);
+    plot_schlieren(S, xx,yy)
+end
 
 
 % Loop over time
@@ -187,13 +188,13 @@ while iteration < max_iter
     k = const.cp/const.Pr * mu; % thermal conductivity
 
 
-    % Construct flux vectors
+    % Construct flux vectors: E,F,G
     E = flux_E(E, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Predictor', Adiabatic);
     F = flux_F(F, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Predictor', Adiabatic);
     G = flux_G(G, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Predictor', Adiabatic);
 
 
-    % Precompute flux vector derivatives
+    % Precompute flux vector derivatives: dE/dx, dF/dy, dG/dz
     dEdx(1,:,:,:) = ddx_fwd(squeeze(E(1,:,:,:)),dx);
     dEdx(2,:,:,:) = ddx_fwd(squeeze(E(2,:,:,:)),dx);
     dEdx(3,:,:,:) = ddx_fwd(squeeze(E(3,:,:,:)),dx);
@@ -234,33 +235,33 @@ while iteration < max_iter
     k = const.cp/const.Pr * mu; % thermal conductivity
 
 
-    % Construct flux vectors
-    Ebar = flux_E(Ebar, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
-    Fbar = flux_F(Fbar, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
-    Gbar = flux_G(Gbar, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
+    % Construct flux vectors: Ebar,Fbar,Gbar
+    E = flux_E(E, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
+    F = flux_F(F, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
+    G = flux_G(G, rho,u,v,w, T,p,Et, mu,k, dx,dy,dz, 'Corrector', Adiabatic);
 
 
-    % Precompute flux vector derivatives
-    dEbardx(1,:,:,:) = ddx_bwd(squeeze(Ebar(1,:,:,:)),dx);
-    dEbardx(2,:,:,:) = ddx_bwd(squeeze(Ebar(2,:,:,:)),dx);
-    dEbardx(3,:,:,:) = ddx_bwd(squeeze(Ebar(3,:,:,:)),dx);
-    dEbardx(4,:,:,:) = ddx_bwd(squeeze(Ebar(4,:,:,:)),dx);
-    dEbardx(5,:,:,:) = ddx_bwd(squeeze(Ebar(5,:,:,:)),dx);
+    % Precompute flux vector derivatives: dEbar/dx, dFbar/dy, dGbar/dz
+    dEdx(1,:,:,:) = ddx_bwd(squeeze(E(1,:,:,:)),dx);
+    dEdx(2,:,:,:) = ddx_bwd(squeeze(E(2,:,:,:)),dx);
+    dEdx(3,:,:,:) = ddx_bwd(squeeze(E(3,:,:,:)),dx);
+    dEdx(4,:,:,:) = ddx_bwd(squeeze(E(4,:,:,:)),dx);
+    dEdx(5,:,:,:) = ddx_bwd(squeeze(E(5,:,:,:)),dx);
 
-    dFbardy(1,:,:,:) = ddy_bwd(squeeze(Fbar(1,:,:,:)),dy);
-    dFbardy(2,:,:,:) = ddy_bwd(squeeze(Fbar(2,:,:,:)),dy);
-    dFbardy(3,:,:,:) = ddy_bwd(squeeze(Fbar(3,:,:,:)),dy);
-    dFbardy(4,:,:,:) = ddy_bwd(squeeze(Fbar(4,:,:,:)),dy);
-    dFbardy(5,:,:,:) = ddy_bwd(squeeze(Fbar(5,:,:,:)),dy);
+    dFdy(1,:,:,:) = ddy_bwd(squeeze(F(1,:,:,:)),dy);
+    dFdy(2,:,:,:) = ddy_bwd(squeeze(F(2,:,:,:)),dy);
+    dFdy(3,:,:,:) = ddy_bwd(squeeze(F(3,:,:,:)),dy);
+    dFdy(4,:,:,:) = ddy_bwd(squeeze(F(4,:,:,:)),dy);
+    dFdy(5,:,:,:) = ddy_bwd(squeeze(F(5,:,:,:)),dy);
 
-    dGbardz(1,:,:,:) = ddz_bwd(squeeze(Gbar(1,:,:,:)),dz);
-    dGbardz(2,:,:,:) = ddz_bwd(squeeze(Gbar(2,:,:,:)),dz);
-    dGbardz(3,:,:,:) = ddz_bwd(squeeze(Gbar(3,:,:,:)),dz);
-    dGbardz(4,:,:,:) = ddz_bwd(squeeze(Gbar(4,:,:,:)),dz);
-    dGbardz(5,:,:,:) = ddz_bwd(squeeze(Gbar(5,:,:,:)),dz);
+    dGdz(1,:,:,:) = ddz_bwd(squeeze(G(1,:,:,:)),dz);
+    dGdz(2,:,:,:) = ddz_bwd(squeeze(G(2,:,:,:)),dz);
+    dGdz(3,:,:,:) = ddz_bwd(squeeze(G(3,:,:,:)),dz);
+    dGdz(4,:,:,:) = ddz_bwd(squeeze(G(4,:,:,:)),dz);
+    dGdz(5,:,:,:) = ddz_bwd(squeeze(G(5,:,:,:)),dz);
 
     % Compute U at time (n+1)
-    U = 0.5*( (U + Ubar) - dt*(dEbardx + dFbardy + dGbardz) );
+    U = 0.5*( (U + Ubar) - dt*(dEdx + dFdy + dGdz) );
     [ rho,u,v,w, T,p,e,Et ] = cons2prim( U, const.R,const.cv );
 
 
@@ -282,38 +283,49 @@ while iteration < max_iter
     % Output iteration count
     iteration = iteration + 1;
     if mod(iteration, print_rate) == 0
-        clc; fprintf('Current iteration: %d/%d\n\n', iteration,max_iter)
-    end
-
-
-    % Compute numerical schlieren image
-    if (useSchlieren)
-        S = schlieren(rho, dx,dy,dz);
-    else
-        S = [];
-    end
-
-    % Update primitive variable fields
-    if mod(iteration, update_rate) == 0
-        plot_fields(rho,u,v, T,p,e, xx,yy, useSchlieren,S);
+        clc
+        fprintf('Current iteration: %d/%d\n', iteration,max_iter)
+        fprintf('Current time: %.4e [s]\n\n', t(iteration))
     end
 
 
     % Store value of convergence variable
     converge(iteration) = eval( converge_str );
 
-    % Update convergence plot (rough)
-    if mod(iteration, update_conv) == 0
+    % Update all field plots
+    if mod(iteration, update_rate) == 0
+
+        % Plot primitive variables
+        figure(fig(1));
+        plot_fields(rho,u,v, T,p,e, xx,yy);
         plot_convergence(        t(1 : update_conv : iteration), ...
                           converge(1 : update_conv : iteration), ...
                           title_str, converge_str);
+        drawnow
+
+
+        % Compute and plot numerical schlieren
+        if (useSchlieren)
+            S = schlieren(rho, dx,dy,dz);
+        
+            figure(fig(2));
+            plot_schlieren(S, xx,yy)
+            plot_convergence(        t(1 : update_conv : iteration), ...
+                              converge(1 : update_conv : iteration), ...
+                              title_str, converge_str);
+            drawnow
+        end
+
     end
 
 
     % Write video
     if mod(iteration, video_rate) == 0
-        frame = getframe(fig);
-        writeVideo(video, frame);
+        frame = getframe(fig(1));
+        writeVideo(video1, frame);
+
+        frame = getframe(fig(2));
+        writeVideo(video2, frame);
     end
 
 
@@ -328,80 +340,90 @@ plot_convergence(t,converge, title_str,converge_str);
 
 
 % Display average time and total time elapsed
-time_avg_calc = mean(timekeep_calc)
-time_avg_plot = mean(timekeep_plot)
-time_all = toc(time_all)
+time_avg_calc = seconds( mean(timekeep_calc) )
+time_avg_plot = seconds( mean(timekeep_plot) )
+time_all = seconds( toc(time_all) );
+time_all.format = 'mm:ss.SSS'
 
 
-close(video);
+close(video1);
 
 
 
 
 %% Functions
 
-function [] = plot_fields( rho,u,v, T,p,e, xx,yy, useSchlieren,S )
-% Pseudocolor plot of primitive variables in x,y domain
+function [] = plot_fields( rho,u,v, T,p,e, xx,yy)
+% Pseudocolor plot of primitive variables in x,y domain; slice of z domain
 
 % Obtain zplane slices
 sz = size(rho);
 zplane = floor(sz(3)/2);
-xx = squeeze(xx(:,:,zplane));
-yy = squeeze(yy(:,:,zplane));
+xx = squeeze(xx(:,:,zplane)) ./ units.in2mm;
+yy = squeeze(yy(:,:,zplane)) ./ units.in2mm;
 
+
+% Density
 subplot(3,3,1);
-if ~(useSchlieren)
-    pcolor(xx,yy,rho(:,:,zplane));
-    title('Density');
-    cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
-    plot_settings(cb_str, jet,'auto')
-else
-    pcolor(xx,yy,S(:,:,zplane));
-    title('Numerical schlieren image');
-    cb_str = '$S(x,y)$ $[1]$';
-    plot_settings(cb_str, gray,[0 1])
-end
+pcolor(xx,yy,rho(:,:,zplane));
+title('Density');
+cb_str = '$\rho$ $[\frac{kg}{m^3}]$';
+plot_settings(cb_str, jet,'auto')
 
+% Velocity x-component (u)
 subplot(3,3,2);
 pcolor(xx,yy,u(:,:,zplane));
 title('Velocity x-component');
 cb_str = '$u$ $[\frac{m}{s}]$';
 plot_settings(cb_str, jet,'auto')
 
+% Velocity y-component (v)
 subplot(3,3,3);
 pcolor(xx,yy,v(:,:,zplane));
 title('Velocity y-component');
 cb_str = '$v$ $[\frac{m}{s}]$';
 plot_settings(cb_str, jet,'auto')
 
+% Internal energy
 subplot(3,3,4);
 pcolor(xx,yy,e(:,:,zplane));
 title('Internal energy');
 cb_str = '$e$ $[J]$';
 plot_settings(cb_str, jet,'auto')
 
+% Pressure
 subplot(3,3,5);
 pcolor(xx,yy,p(:,:,zplane));
 title('Pressure');
 cb_str = '$p$ $[\frac{N}{m^2}]$';
 plot_settings(cb_str, jet,'auto')
 
+% Temperature
 subplot(3,3,6);
 pcolor(xx,yy,T(:,:,zplane));
 title('Temperature');
 cb_str = '$T$ $[K]$';
 plot_settings(cb_str, hot,'auto')
 
-
-% % Full size pressure plot
-% subplot(3,3,1:6);
-% pcolor(xx,yy,p(:,:,zplane));
-% title('Pressure');
-% cb_str = '$p$ $[\frac{N}{m^2}]$';
-% plot_settings(cb_str, jet,'auto')
+end
 
 
-drawnow
+function [] = plot_schlieren( S, xx,yy )
+% Pseudocolor plot of schlieren in x,y domain; slice of z domain
+
+% Obtain zplane slices
+sz = size(S);
+zplane = floor(sz(3)/2);
+xx = squeeze(xx(:,:,zplane)) ./ units.in2mm;
+yy = squeeze(yy(:,:,zplane)) ./ units.in2mm;
+
+
+% Plot schlieren
+subplot(3,3,1:6);
+pcolor(xx,yy,S(:,:,zplane));
+title('Numerical schlieren image');
+cb_str = '$S(x,y)$ $[1]$';
+plot_settings(cb_str, gray,[0 1])
 
 end
 
@@ -411,7 +433,7 @@ function [] = plot_settings( cb_str, cmap,limits )
 
 ax = gca;
 
-xlabel('x'); ylabel('y');
+xlabel('x [in.]'); ylabel('y [in.]');
 cb = colorbar;
 cb.Label.Interpreter = 'Latex';
 ylabel(cb, cb_str, 'FontSize',14);
@@ -425,8 +447,6 @@ axis equal tight; shading interp
 end
 
 
-
-
 function [] = plot_convergence( t,y, title_str,y_str )
 % Plot of convergence variable over time
 
@@ -434,8 +454,6 @@ subplot(3,3,7:9);
 plot(t,y);
 title(title_str); xlabel('t [s]'); ylabel(y_str);
 axis tight
-
-% drawnow
 
 end
 
