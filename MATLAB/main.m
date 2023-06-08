@@ -35,9 +35,9 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 35;
-Ny = 25;
-Nz = 20;
+Nx = 130;
+Ny = 120;
+Nz = 120;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
@@ -48,16 +48,23 @@ L = 4 * H; % Length, [m]
 
 % Time span
 % dt = 2.35 * 10^-11; % Time step, [s]
-dt = 5 * 10^-9;
-max_iter = 10000;    % number of iterations
+dt = 1 * 10^-7;
+final_time = 1 * 10^-4;
+
+% Number of iterations
+max_iter = floor(final_time / dt)
 
 
 % Convergence variable
 converge_name = 'u';
 
 % Update every _ iterations
-update_rate = 500; % variable field plots
-update_conv = 100; % convergence plot
+update_rate = ceil(max_iter/100); % variable field plots
+update_rate = 1;
+update_conv = update_rate/5;     % convergence plot
+update_conv = 1;
+print_rate = 1;
+video_rate = update_rate;
 % The convergence plot will be updated to a smooth plot at the end
 
 
@@ -133,6 +140,11 @@ converge(1) = eval( converge_str );
 
 % Enforce Boundary Conditions on primitives
 [ rho,u,v,w, T,p,~,Et ] = BC( rho,u,v,w, T,p,e,Et, u_Inf, Adiabatic );
+
+
+% Write video
+video = VideoWriter('nse-3d.mp4', 'MPEG-4');
+open(video);
 
 
 
@@ -263,7 +275,9 @@ while iteration < max_iter
 
     % Output iteration count
     iteration = iteration + 1;
-    clc; fprintf('Current iteration: %d\n\n', iteration)
+    if mod(iteration, print_rate) == 0
+        clc; fprintf('Current iteration: %d/%d\n\n', iteration,max_iter)
+    end
 
 
     % Compute numerical schlieren image
@@ -290,6 +304,13 @@ while iteration < max_iter
     end
 
 
+    % Write video
+    if mod(iteration, video_rate) == 0
+        frame = getframe(fig);
+        writeVideo(video, frame);
+    end
+
+
     time = toc(time);
     timekeep_plot(iteration) = time;
     
@@ -304,6 +325,9 @@ plot_convergence(t,converge, title_str,converge_str);
 time_avg_calc = mean(timekeep_calc)
 time_avg_plot = mean(timekeep_plot)
 time_all = toc(time_all)
+
+
+close(video);
 
 
 
