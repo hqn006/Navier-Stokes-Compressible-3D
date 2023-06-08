@@ -8,7 +8,7 @@ for i=1:size(f,1)
         %periodic
        % df(i,1)=(f(i,1)-f(i,end))/dy;
         %Normal
-     %   df(i,j,1)=(f(i,j,2)-f(i,j,1))/dz;
+        df(i,j,1)=(f(i,j,2)-f(i,j,1))/dz;
         for k=2:size(f,3)
             df(i,j,k)=(f(i,j,k)-f(i,j,k-1))/dz;
         end
