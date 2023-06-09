@@ -29,15 +29,15 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 40;
-Ny = 20;
-Nz = 20;
+Nx = 80;
+Ny = 60;
+Nz = 60;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 1 * units.in2mm*10^-3; % Height, [m]
 W = 1 * units.in2mm*10^-3; % Width,  [m]
-L = 5 * H; % Length, [m]
+L = 6 * H; % Length, [m]
 
 
 % Time span
@@ -138,8 +138,9 @@ converge(1) = eval( converge_str );
 % Write video
 video1 = VideoWriter('Navier-Stokes_3D_QoI.mp4', 'MPEG-4');
 video2 = VideoWriter('Navier-Stokes_3D_schlieren.mp4', 'MPEG-4');
-open(video1);
-open(video2);
+
+open(video1); fprintf("Opened Navier-Stokes_3D_QoI.mp4\n")
+open(video2); fprintf("Opened Navier-Stokes_3D_schlieren.mp4")
 
 
 
@@ -331,6 +332,8 @@ while iteration < max_iter
 end
 
 
+%% Post-Run
+
 % Update convergence plot with smooth plot
 plot_convergence(t,converge, title_str,converge_str);
 
@@ -343,11 +346,17 @@ time_all.Format = 'mm:ss';
 
 fprintf("Average calculation time: " + char(time_avg_calc) + "\n")
 fprintf("Average plotting time:    " + char(time_avg_plot) + "\n")
-fprintf("\nTotal time: " + char(time_all) + " min\n\n")
+fprintf("\nTotal time: " + char(time_all) + " min\n\n\n")
 
 
-close(video1);
-close(video2);
+% Save videos
+close(video1); fprintf("Saved 'Navier-Stokes_3D_QoI.mp4'.\n")
+close(video2); fprintf("Saved 'Navier-Stokes_3D_schlieren.mp4'.\n\n")
+
+
+% Save variables
+save prim.mat  rho u v w T p e Et  xx yy zz  Nx Ny Nz
+fprintf("Saved variables to 'prim.mat'.\n\n")
 
 
 
