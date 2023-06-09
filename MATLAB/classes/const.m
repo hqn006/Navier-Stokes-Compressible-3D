@@ -16,8 +16,7 @@ classdef const
     gamma = 1.4; % ratio of specific heats,          [1]
 
     rho0 = const.p0/const.R/const.T0; % density, [kg/m^3]
-    
-    mu0 = 8.478090048343994e-06; % viscosity, [N*s/m^2]
+
     S1 = 110.4; % Sutherland Temperature, [K]
     Pr = 0.71; % Prandtl number,          [1]
     end

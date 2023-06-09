@@ -7,17 +7,17 @@
 % unchanged.
 % 
 % INPUTS
-% T : Temperature
+% T   : Temperature
+% mu0 : reference viscosity, taken at inlet based on Re_D
 % 
 % OUTPUTS
 % mu : dynamic viscosity
 
 
-function [ mu ] = sutherland( T )
+function [ mu ] = sutherland( T, mu0 )
 
 % Sutherland's law
-mu = const.mu0*(T/const.T0).^(3/2) .* ...
-                                   ( (const.T0+const.S1) ./ (T+const.S1) );
+mu = mu0*(T/const.T0).^(3/2) .* ( (const.T0+const.S1) ./ (T+const.S1) );
 
 end
 
