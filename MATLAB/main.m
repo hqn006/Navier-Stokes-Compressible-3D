@@ -29,9 +29,9 @@ M = 3.9; % Inflow Mach number = u_Inf/a, [1]
 
 
 % Number of grid points
-Nx = 80;
-Ny = 60;
-Nz = 60;
+Nx = 220;
+Ny = 200;
+Nz = 200;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
@@ -41,8 +41,8 @@ L = 6 * H; % Length, [m]
 
 
 % Time span
-dt = 1 * 10^-7;
-final_time = 2 * 10^-4;
+dt = 4 * 10^-7;
+final_time = 1.2 * 10^-4;
 
 % Number of iterations
 max_iter = floor(final_time / dt) + 1
@@ -52,7 +52,7 @@ max_iter = floor(final_time / dt) + 1
 converge_name = 'u';
 
 % Update every _ iterations
-update_rate = 10; % variable field plots
+update_rate = 30; % variable field plots
 update_conv = 1; % convergence plot
 print_rate = 1;
 video_rate = update_rate;
@@ -64,11 +64,11 @@ fig_size = [1920 1080];
 
 %% Enable/Disable
 
-% Numerical schlieren ('streaks')
-useSchlieren = true; % Additional plot & video of numerical schlieren
-
 % Adiabatic wall
 Adiabatic = true; % Zero heat flux through wall BC
+
+% Numerical schlieren ('streaks')
+useSchlieren = true; % Additional plot & video of numerical schlieren
 
 
 
@@ -78,7 +78,7 @@ Adiabatic = true; % Zero heat flux through wall BC
 % Grid spacing
 dx = L / (Nx-1);
 dy = H / (Ny-1);
-dz = H / (Ny-1);
+dz = W / (Nz-1);
 x = 0 : dx : L;
 y = 0 : dy : H;
 z = 0 : dz : W;
@@ -355,7 +355,7 @@ close(video2); fprintf("Saved 'Navier-Stokes_3D_schlieren.mp4'.\n\n")
 
 
 % Save variables
-save prim.mat  rho u v w T p e Et  xx yy zz  Nx Ny Nz
+save prim.mat  rho u v w T p e Et  xx yy zz  Nx Ny Nz  dx dy dz
 fprintf("Saved variables to 'prim.mat'.\n\n")
 
 

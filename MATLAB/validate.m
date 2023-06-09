@@ -29,7 +29,7 @@ set(0, 'DefaultAxesFontSize', 14);
 
 %% Input
 
-streamwise = floor(Nx.* (0.125:0.2:1));
+search = [0.5 1.5 2.5 3.5];
 
 
 %% Setup
@@ -38,7 +38,14 @@ x = squeeze(xx(:,1,1));
 y = squeeze(yy(1,:,1));
 z = squeeze(zz(1,1,:));
 
-u0 = u(1,1,1);
+u_cl = u(Nx/2,Ny/2,Nz/2);
+
+
+H = 1 * units.in2mm*10^-3; % Height, [m]
+W = 1 * units.in2mm*10^-3; % Width,  [m]
+L = 6 * H; % Length, [m]
+dx = L / (Nx-1);
+delta = dx ./ units.in2mm.*10^3;
 
 
 
@@ -46,12 +53,22 @@ u0 = u(1,1,1);
 %% Plot
 
 % Axial velocity contours, transverse velocity quiver
-for i = 1:length(streamwise)
+streamwise = zeros(length(search),1);
+current = 0;
+index = 1;
+for i = 1:length(search)
+
+    while current < search(i)
+        current = current + delta;
+        index = index + 1;
+    end
+    streamwise(i) = index;
+
 
     % Compute
-    x_D = x(streamwise);
+    x_D(i) = x(streamwise(i));
 
-    axial_vel = squeeze( u(streamwise(i),:,:) );
+    axial_vel = squeeze( u(streamwise(i),:,:) ) ./ u_cl;
     y_vel = squeeze( v(streamwise(i),:,:) );
     z_vel = squeeze( w(streamwise(i),:,:) );
 
@@ -59,10 +76,10 @@ for i = 1:length(streamwise)
     % Plot
     fig_contour(i) = figure;
 
-    contourf(y,z, axial_vel); hold on
+    contourf(z,y, axial_vel); hold on
     colorbar
 
-    quiver(y,z, y_vel,z_vel)
+    quiver(z,y, z_vel,y_vel)
 
 
     title("Velocity contours at x/D=" + x_D(i))
@@ -74,7 +91,7 @@ end
 % Axial velocity at wall bisector
 for j = length(streamwise)
 
-    axial_vel = squeeze( u(streamwise(j),:,floor(Nz/2)) ) ./ u0;
+    axial_vel = squeeze( u(streamwise(j),:,floor(Nz/2)) ) ./ u_cl;
 
 
     % Plot
