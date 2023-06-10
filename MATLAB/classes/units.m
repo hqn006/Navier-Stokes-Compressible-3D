@@ -2,7 +2,7 @@
 
 classdef units
     properties (Constant)
-    in2mm = 25.4;
+    in2m = 25.4 / 10^3; % in/m
     end
 end
 

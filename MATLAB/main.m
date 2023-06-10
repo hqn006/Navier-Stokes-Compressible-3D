@@ -26,19 +26,21 @@ set(0, 'DefaultAxesFontSize', 14);
 %% Input
 
 M = 3.9;         % Inflow Mach number = u_Inf/a, [1]
-Re_D = 2 * 10^4; % Reynold's number, char. length D=H=W
+% Re_D = 1.96 * 10^7; % Reynold's number, char. length D=H=W
+
+Re_D = 1.8 * 10^6; % Reynold's number from Gessner
 
 
 % Number of grid points
-Nx = 50;
-Ny = 40;
-Nz = 40;
+Nx = 100;
+Ny = 50;
+Nz = 50;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
-H = 1 * units.in2mm*10^-3; % Height, [m]
-W = 1 * units.in2mm*10^-3; % Width,  [m]
-L = 20 * H; % Length, [m]
+H = 1 * units.in2m; % Height, [m]
+W = 1 * units.in2m; % Width,  [m]
+L = 21 * H; % Length, [m]
 
 
 % Time span
@@ -86,15 +88,15 @@ z = 0 : dz : W;
 
 % Plotting grid
 [xx,yy,zz] = ndgrid(x,y,z);
-xx = xx ./ units.in2mm.*10^3;
-yy = yy ./ units.in2mm.*10^3;
-zz = zz ./ units.in2mm.*10^3;
+xx = xx ./ units.in2m;
+yy = yy ./ units.in2m;
+zz = zz ./ units.in2m;
 
 
 % Properties @Infinity
 a_Inf = sqrt(const.gamma * const.R * const.T0); % speed of sound
 u_Inf = M*a_Inf;                                % from input Mach number
-mu0 = const.rho0*u_Inf*H / Re_D; % reference viscosity
+mu0 = const.rho0*u_Inf / Re_D; % reference viscosity
 
 % Initial Condition @(x,y, t=0)
 rho = ones(Nx,Ny,Nz) * const.rho0;
