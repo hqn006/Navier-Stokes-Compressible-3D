@@ -29,7 +29,7 @@ for i=2:size(f,1)-1
             df(i,j,k)=(f(i,j+1,k)-f(i,j,k))/dy;
         end
         %Normal
-        df(i,end,k)=(f(i,end,k)-f(i,end-1,k));
+        df(i,end,k)=(f(i,end,k)-f(i,end-1,k))/dy;
     %Periodic
        % df(i,end)=(f(i,1)-f(i,end))/dy;
     end
