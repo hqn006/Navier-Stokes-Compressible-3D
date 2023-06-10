@@ -1,14 +1,39 @@
-function df = ddz_fwd(f,dz)
+% function df = ddz_fwd(f,dz)
+% 
+% df = zeros([size(f)]);
+% for i=2:size(f,1)-1
+%     for j=2:size(f,2)-1
+%         for k=1:size(f,3)-1
+%             df(i,j,k)=(f(i,j,k+1)-f(i,j,k))/dz;
+%         end
+%         %Normal
+%         df(size(f,3))=(f(i,j,size(f,3)) -f(i,j,size(f,3)-1))/dz;
+%     %Periodic
+%        % df(i,end)=(f(i,1)-f(i,end))/dy;
+%     end
+% end
+function dfdz = ddz_fwd(f,dz)
+    
+    % determine field size
+    [nx,ny,nz]     = size(f);
 
-df = zeros([size(f)]);
-for i=2:size(f,1)-1
-    for j=2:size(f,2)-1
-        for k=1:size(f,3)-1
-            df(i,j,k)=(f(i,j,k+1)-f(i,j,k))/dz;
+    % allocate return field
+    dfdz        = zeros(nx,ny,nz);
+    
+    % forward difference
+    for i=1:nx
+        for j=1:ny               
+            for k=1:nz-1
+                dfdz(i,j,k) = (f(i,j,k+1)-f(i,j,k))/dz;
+            end
         end
-        %Normal
-        df(size(f,3))=(f(i,j,size(f,3)) -f(i,j,size(f,3)-1))/dz;
-    %Periodic
-       % df(i,end)=(f(i,1)-f(i,end))/dy;
+    end
+    
+    % backward difference for last point
+    k = nz;
+    for i=1:nx
+        for j=1:ny
+            dfdz(i,j,k) = (f(i,j,k)-f(i,j,k-1))/dz;
+        end
     end
 end

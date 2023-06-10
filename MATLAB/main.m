@@ -26,26 +26,24 @@ set(0, 'DefaultAxesFontSize', 14);
 %% Input
 
 M = 3.9;         % Inflow Mach number = u_Inf/a, [1]
-% Re_D = 1.96 * 10^7; % Reynold's number, char. length D=H=W
-
-Re_D = 1.8 * 10^6; % Reynold's number from Gessner
+Re_prime = 1.8 * 10^6; % Reynold's number from Gessner, [1/m]
 
 
 % Number of grid points
-Nx = 100;
-Ny = 50;
-Nz = 50;
+Nx = 40;
+Ny = 20;
+Nz = 20;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
 H = 1 * units.in2m; % Height, [m]
 W = 1 * units.in2m; % Width,  [m]
-L = 21 * H; % Length, [m]
+L = 6 * H; % Length, [m]
 
 
 % Time span
-dt = 5 * 10^-7;
-final_time = 5 * 10^-4;
+dt = 1 * 10^-7;
+final_time = 1.5 * 10^-4;
 
 % Number of iterations
 max_iter = floor(final_time / dt) + 1
@@ -55,7 +53,7 @@ max_iter = floor(final_time / dt) + 1
 converge_name = 'u';
 
 % Update every _ iterations
-update_rate = 100; % variable field plots
+update_rate = ceil(max_iter/30); % variable field plots
 update_conv = 1; % convergence plot
 print_rate = 1;
 video_rate = update_rate;
@@ -96,7 +94,7 @@ zz = zz ./ units.in2m;
 % Properties @Infinity
 a_Inf = sqrt(const.gamma * const.R * const.T0); % speed of sound
 u_Inf = M*a_Inf;                                % from input Mach number
-mu0 = const.rho0*u_Inf / Re_D; % reference viscosity
+mu0 = const.rho0*u_Inf / Re_prime; % reference viscosity
 
 % Initial Condition @(x,y, t=0)
 rho = ones(Nx,Ny,Nz) * const.rho0;
@@ -185,7 +183,7 @@ while iteration < max_iter
     % Backward FDs for inner nested derivatives
 
     % Update physical parameters
-    mu = sutherland(T, mu0);         % dynamic viscosity from Sutherland's law
+    mu = sutherland(T, mu0);    % dynamic viscosity from Sutherland's law
     k = const.cp/const.Pr * mu; % thermal conductivity
 
 
@@ -456,7 +454,8 @@ colormap(cb,cmap);
 colormap(ax,cmap);
 clim(ax,limits);
 
-axis equal tight; shading interp
+axis equal tight
+shading flat
 
 end
 
