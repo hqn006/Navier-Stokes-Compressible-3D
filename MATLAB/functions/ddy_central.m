@@ -22,8 +22,8 @@ function dfdy = ddy_central(f,dy)
     dfdy        = zeros(nx,ny,nz);
     
     % central difference
-    for i=1:nx
-        for k=1:nz
+    for i=2:nx-1
+        for k=2:nz-1
             for j=2:ny-1
                 dfdy(i,j,k) = (f(i,j+1,k)-f(i,j-1,k))/2/dy;
             end
@@ -31,17 +31,17 @@ function dfdy = ddy_central(f,dy)
     end
     
     % % forward difference for first point
-    % j = 1;
-    % for i=1:nx
-    %     for k=1:nz
+    % j = 2;
+    % for i=2:nx-1
+    %     for k=2:nz-1
     %         dfdy(i,j,k) = (-3*f(i,j,k)+4*f(i,j+1,k)-f(i,j+2,k))/2/dy;
     %     end
     % end
     % 
     % % backward difference for last point
-    % j = ny;
-    % for i=1:nx
-    %     for k=1:nz
+    % j = ny-1;
+    % for i=2:nx-1
+    %     for k=2:nz-1
     %         dfdy(i,j,k) = (3*f(i,j,k)-4*f(i,j-1,k)+f(i,j-2,k))/2/dy;
     %     end
     % end

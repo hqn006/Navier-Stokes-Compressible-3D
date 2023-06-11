@@ -21,8 +21,8 @@ function dfdz = ddz_fwd(f,dz)
     dfdz        = zeros(nx,ny,nz);
     
     % forward difference
-    for i=1:nx
-        for j=1:ny               
+    for i=2:nx-1
+        for j=2:ny-1
             for k=1:nz-1
                 dfdz(i,j,k) = (f(i,j,k+1)-f(i,j,k))/dz;
             end
@@ -30,10 +30,10 @@ function dfdz = ddz_fwd(f,dz)
     end
     
     % backward difference for last point
-    k = nz;
-    for i=1:nx
-        for j=1:ny
-            dfdz(i,j,k) = (f(i,j,k)-f(i,j,k-1))/dz;
-        end
-    end
+    % k = nz;
+    % for i=2:nx-1
+    %     for j=2:ny-1
+    %         dfdz(i,j,k) = (f(i,j,k)-f(i,j,k-1))/dz;
+    %     end
+    % end
 end

@@ -21,8 +21,8 @@ function dfdx = ddx_central(f,dx)
     dfdx        = zeros(nx,ny,nz);
     
     % central difference
-    for j=1:ny
-        for k=1:nz
+    for j=2:ny-1
+        for k=2:nz-1
             for i=2:nx-1
                 dfdx(i,j,k) = (f(i+1,j,k)-f(i-1,j,k))/2/dx;
             end
@@ -30,17 +30,17 @@ function dfdx = ddx_central(f,dx)
     end
     
     % % forward difference for first point
-    % i = 1;
-    % for j=1:ny
-    %     for k=1:nz
+    % i = 2;
+    % for j=2:ny-1
+    %     for k=2:nz-1
     %         dfdx(i,j,k) = (-3*f(i,j,k)+4*f(i+1,j,k)-f(i+2,j,k))/2/dx;
     %     end
     % end
     % 
     % % backward difference for last point
-    % i = nx;
-    % for j=1:ny
-    %     for k=1:nz
+    % i = nx-1;
+    % for j=2:ny-1
+    %     for k=2:nz-1
     %         dfdx(i,j,k) = (3*f(i,j,k)-4*f(i-1,j,k)+f(i-2,j,k))/2/dx;
     %     end
     % end

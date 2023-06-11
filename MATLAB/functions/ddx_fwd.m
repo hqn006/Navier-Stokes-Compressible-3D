@@ -25,8 +25,8 @@ function dfdx = ddx_fwd(f,dx)
     dfdx        = zeros(nx,ny,nz);
     
     % forward difference
-    for j=1:ny
-        for k=1:nz               
+    for j=2:ny-1
+        for k=2:nz-1
             for i=1:nx-1
                 dfdx(i,j,k) = (f(i+1,j,k)-f(i,j,k))/dx;
             end
@@ -34,10 +34,10 @@ function dfdx = ddx_fwd(f,dx)
     end
     
     % backward difference for last point
-    i = nx;
-    for j=1:ny
-        for k=1:nz
-            dfdx(i,j,k) = (f(i,j,k)-f(i-1,j,k))/dx;
-        end
-    end
+    % i = nx;
+    % for j=2:ny-1
+    %     for k=2:nz-1
+    %         dfdx(i,j,k) = (f(i,j,k)-f(i-1,j,k))/dx;
+    %     end
+    % end
 end

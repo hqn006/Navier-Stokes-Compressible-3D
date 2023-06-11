@@ -7,8 +7,8 @@ function dfdy = ddy_fwd(f,dy)
     dfdy        = zeros(nx,ny,nz);
     
     % forward difference
-    for i=1:nx
-        for k=1:nz               
+    for i=2:nx-1
+        for k=2:nz-1
             for j=1:ny-1
                 dfdy(i,j,k) = (f(i,j+1,k)-f(i,j,k))/dy;
             end
@@ -16,12 +16,12 @@ function dfdy = ddy_fwd(f,dy)
     end
     
     % backward difference for last point
-    j = ny;
-    for i=1:nx
-        for k=1:nz
-            dfdy(i,j,k) = (f(i,j,k)-f(i,j-1,k))/dy;
-        end
-    end
+    % j = ny;
+    % for i=2:nx-1
+    %     for k=2:nz-1
+    %         dfdy(i,j,k) = (f(i,j,k)-f(i,j-1,k))/dy;
+    %     end
+    % end
 end
 
 % function df = ddy_fwd(f,dy)

@@ -21,8 +21,8 @@ function dfdz = ddz_central(f,dz)
     dfdz        = zeros(nx,ny,nz);
     
     % central difference
-    for i=1:nx
-        for j=1:ny
+    for i=2:nx-1
+        for j=2:ny-1
             for k=2:nz-1
                 dfdz(i,j,k) = (f(i,j,k+1)-f(i,j,k-1))/2/dz;
             end
@@ -30,17 +30,18 @@ function dfdz = ddz_central(f,dz)
     end
     
     % % forward difference for first point
-    % k = 1;
-    % for i=1:nx
-    %     for j=1:ny
+    % k = 2;
+    % for i=2:nx-1
+    %     for j=2:ny-1
     %         dfdz(i,j,k) = (-3*f(i,j,k)+4*f(i,j,k+1)-f(i,j,k+2))/2/dz;
     %     end
     % end
     % 
     % % backward difference for last point
-    % k = nz;
-    % for i=1:nx
-    %     for j=1:ny
+    % k = nz-1;
+    % for i=2:nx-1
+    %     for j=2:ny-1
     %         dfdz(i,j,k) = (3*f(i,j,k)-4*f(i,j,k-1)+f(i,j,k-2))/2/dz;
     %     end
     % end
+end
