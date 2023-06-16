@@ -29,7 +29,7 @@ set(0, 'DefaultAxesFontSize', 14);
 
 %% Input
 
-search = [0.5 1.5 2.5 3.5 5.3 20];
+search = [0.47 1.5 2.5 3.5 5.3];
 
 
 % Figure settings
@@ -82,7 +82,8 @@ for i = 1:length(search)
 
     % Plot Velocity
     fig_contour(i) = figure('Position', [0 0 contour_size]);
-    contourf(z,y, axial_vel); hold on
+    [c,h] = contourf(z,y, axial_vel); hold on
+    set(h, 'edgecolor','none')
     colorbar
     quiver(z,y, z_vel,y_vel)
 

@@ -30,9 +30,9 @@ Re_prime = 1.2 * 10^6; % Reynold's number from Gessner, [1/m]
 
 
 % Number of grid points
-Nx = 80;
-Ny = 60;
-Nz = 60;
+Nx = 50;
+Ny = 30;
+Nz = 30;
 
 % Domain (x,y,z : L x H x W)
 % 1 in. x 1 in. (1 in. = 25.4 mm)
@@ -42,8 +42,8 @@ L = 6 * H; % Length, [m]
 
 
 % Time span
-dt = 0.33 * 10^-8;
-final_time = 2.5 * 10^-4;
+dt = 1 * 10^-7;         % [s]
+final_time = 2 * 10^-4; % [s]
 
 % Number of iterations
 max_iter = floor(final_time / dt) + 1
@@ -53,7 +53,7 @@ max_iter = floor(final_time / dt) + 1
 converge_name = 'u';
 
 % Update every _ iterations
-update_rate = ceil(max_iter/1000); % variable field plots
+update_rate = ceil(max_iter/40); % variable field plots
 update_conv = 1; % convergence plot
 print_rate = 1;
 video_rate = update_rate;
